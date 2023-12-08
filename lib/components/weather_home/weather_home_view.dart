@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:myweather/components/weather_home/weather_home.dart';
+import 'package:myweather/components/weather_home/weather_home_view_model.dart';
 
 class WeatherHomeView extends State<WeatherHome> {
-  String cityName = "Loading...";
-
+  late WeatherHomeViewModel _viewModel;
+  WeatherHomeView() {
+    _viewModel = WeatherHomeViewModel();
+  }
   @override
   void initState() {
     super.initState();
@@ -14,27 +17,24 @@ class WeatherHomeView extends State<WeatherHome> {
 
   Future<void> _getLocation() async {
     try {
-      // Request permission to access location
       LocationPermission permission = await Geolocator.requestPermission();
 
       if (permission == LocationPermission.denied) {
-        // Handle denied permission
         return;
       }
 
-      // Get the current position (latitude and longitude)
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // Reverse geocoding to get city name
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
 
       setState(() {
-        cityName = placemarks.first.locality ?? "Unknown";
+        _viewModel.cityName = placemarks.first.locality ?? "Unknown";
+        _viewModel.getWeatherDetails();
       });
     } catch (e) {
       print("Error: $e");
@@ -51,10 +51,56 @@ class WeatherHomeView extends State<WeatherHome> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('User City Name: $cityName'),
+            TextField(
+              decoration: borderDecoration("Location"),
+            ),
+            Text('User City Name: ${_viewModel.cityName}'),
           ],
         ),
       ),
+    );
+  }
+
+  InputDecoration borderDecoration(String? label,
+      {Widget? suffixIcon,
+      Widget? prefixIcon,
+      String? hint,
+      String? prefixText,
+      bool isEnable = false,
+      InputBorder? borderCustom,
+      InputBorder? focusedBorderCustom,
+      EdgeInsetsGeometry? contentPaddingCustom}) {
+    return InputDecoration(
+      prefixText: prefixText,
+      prefixStyle: TextStyle(fontSize: 16),
+      prefixIcon: prefixIcon,
+      suffixIcon: suffixIcon,
+      contentPadding:
+          contentPaddingCustom != null ? contentPaddingCustom : null,
+      border: isEnable
+          ? null
+          : borderCustom != null
+              ? borderCustom
+              : OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+      focusedBorder: isEnable
+          ? null
+          : focusedBorderCustom != null
+              ? focusedBorderCustom
+              : OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+      disabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.black),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      labelText: label,
+      labelStyle: TextStyle(fontSize: 16.0, color: Colors.black),
+      alignLabelWithHint: true,
+      hintStyle: TextStyle(fontSize: 16.0, color: Colors.black),
     );
   }
 }
