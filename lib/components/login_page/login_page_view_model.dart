@@ -16,21 +16,24 @@ class LoginPageViewModel {
   StreamController streamController = StreamController.broadcast();
   bool loader = true;
 
-  Future<us.User?> login() async {
+  Future<us.User?> login(BuildContext context) async {
     us.User? userData;
     User? user = await AuthService.shared.signInWithEmailAndPassword(
-        emailController.text, passwordController.text);
+        emailController.text, passwordController.text,context);
     if (user != null && user.email != null) {
       userData = us.User(email: user.email);
     }
     return userData;
   }
 
-  signUp() async {
+  Future<us.User?> signUp(BuildContext context) async {
+    us.User? userData;
     User? user = await AuthService.shared.signUpWithEmailAndPassword(
-        emailController.text, passwordController.text);
+        emailController.text, passwordController.text,context);
     if (user != null && user.email != null) {
-    } else {}
+      userData = us.User(email: user.email);
+    }
+    return userData;
   }
 
   validateUser(BuildContext context) async {

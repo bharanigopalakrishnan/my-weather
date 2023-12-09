@@ -9,7 +9,7 @@ class UserController extends ChangeNotifier {
 
   UserController({this.userData});
 
-  void updateUser(User user) {
+  void updateUser(User? user) {
     userData = user;
     saveCountToLocalStorage();
     notifyListeners();
@@ -17,7 +17,7 @@ class UserController extends ChangeNotifier {
 
   Future<void> saveCountToLocalStorage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user', json.encode(userData!.toJson()));
+     userData != null?await prefs.setString('user',json.encode(userData!.toJson())): await prefs.remove('user');
   }
 
   Future<User?> loadCountFromLocalStorage() async {

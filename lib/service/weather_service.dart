@@ -8,9 +8,10 @@ class WeatherService {
   static WeatherService shared = WeatherService();
 
   Future<Weather?> getWeatherForCity(String city) async {
-    var url = Uri.https(
-      'http://api.weatherapi.com/v1/forecast.json?key=${AppConfig.shared.weatherKey}&q=$city&days=7&aqi=no&alerts=no',
-    );
+      var url = Uri.https(
+        'api.weatherapi.com',
+        '/v1/forecast.json',
+        {'key': AppConfig.shared.weatherKey, 'q': city, 'days': '7', 'aqi': 'no', 'alerts': 'no'});
 
     var response = await http.get(url);
     if (response.statusCode == 200) {

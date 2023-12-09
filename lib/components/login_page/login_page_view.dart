@@ -50,8 +50,12 @@ class LoginPageView extends State<LoginPage> {
                               style: const ButtonStyle(
                                   backgroundColor:
                                       MaterialStatePropertyAll(Colors.amber)),
-                              onPressed: () {
-                                _viewModel.signUp();
+                              onPressed: () async{
+                                User? user = 
+                               await _viewModel.signUp(context);
+                                  if (user?.email != null) {
+                                  updateData(user!);
+                                } 
                               },
                               child: const Text(
                                 'Sign Up',
@@ -61,10 +65,10 @@ class LoginPageView extends State<LoginPage> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
-                                User? user = await _viewModel.login();
+                                User? user = await _viewModel.login(context);
                                 if (user?.email != null) {
                                   updateData(user!);
-                                } else {}
+                                } 
                               },
                               child: const Text(
                                 'Sign In',
